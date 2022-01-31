@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Simpliest Chat</title>
+   </head>
+   <body>
+      <form>
+         <input type="text" name="name" id="name" />
+         <input type="text" name="message" id="message" />
+         <input type="submit" id="send" />
+         <ul id="messages"></ul>
+      </form>
+      <script>
+         const messages = document.getElementById("messages");
+         const sendButton = document.getElementById("send");
+         const ws = new WebSocket("ws://localhost:3000");
+         ws.onmessage = (message) => {
+            const messageItem = JSON.parse(message.data);
+            const newMessage = document.createElement("li");
+            const messageText = document.createTextNode(
+               `Имя: ${messageItem.name}. Сообщение: ${messageItem.message}`
+            );
+            newMessage.appendChild(messageText);
+            messages.appendChild(newMessage);
+         };
+         sendButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const message = document.getElementById("message").value;
+            const data = JSON.stringify({ name, message });
+            ws.send(data);
+         });
+      </script>
+   </body>
+</html>
